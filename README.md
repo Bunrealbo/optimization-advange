@@ -5,4 +5,5 @@
   - Gradient Descent with Backtracking
   - Stochastic Gradient Descent
   - Stochastic Gradient Descent with Backtracking
+  - Newton
   - ...

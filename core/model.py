@@ -10,7 +10,7 @@ class LogisticRegression:
         self, 
         learning_rate=0.01, 
         num_iterations=100,
-        solver="gradient_descent",
+        solver="gradient-descent",
         regularization="None",
         lambda_=1.0,
         batch_size=32,

@@ -193,7 +193,7 @@ class LogisticRegressionNewton(BaseLR):
             gradient = self.gradient(h, y, X, self.theta)
             v = (h * (1 - h)).reshape(-1, )
             hessian = np.dot(X.T, np.dot(np.diag(v), X)) / y.size
-            self.theta -= np.linalg.inv(hessian) @ gradient
+            self.theta -= self.learning_rate * np.linalg.pinv(hessian) @ gradient
             
             if self.log == True:
                 self.log_loss(X, y, self.theta)

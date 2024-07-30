@@ -54,12 +54,12 @@ class BaseLR(ABC):
     
     def __gradient_l1(self, h, y, X, theta):
         grad = self.__gradient(h, y, X)
-        grad[1:] += self.lambda_ * np.sign(theta[1:])
+        grad += self.lambda_ * np.sign(theta) / y.size
         return grad
     
     def __gradient_l2(self, h, y, X, theta):
         grad = self.__gradient(h, y, X)
-        grad[1:] += self.lambda_ * theta[1:]
+        grad += self.lambda_ * theta / y.size
         return grad
     
     def predict_prob(self, X):

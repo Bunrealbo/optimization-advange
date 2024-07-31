@@ -18,11 +18,14 @@ class LogisticRegression:
         c = 0.5,
         backtracking = False,
         fit_intercept=True, 
-        log=True
+        log=True,
+        beta1=0.9,
+        beta2=0.999,
+        epsilon=1e-8
     ):
         # Check solver
-        if solver not in ["gradient-descent", "newton", "sgd", "bfgs"]:
-            raise ValueError("Solver must be one of ['gradient-descent', 'newton', 'sgd', 'bfgs']")
+        if solver not in ["gradient-descent", "newton", "sgd", "bfgs", "adam"]:
+            raise ValueError("Solver must be one of ['gradient-descent', 'newton', 'sgd', 'bfgs', 'adam']")
         
         if solver == "gradient-descent":
             self.solver = LogisticRegressionGD(

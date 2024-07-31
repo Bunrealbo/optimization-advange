@@ -198,3 +198,58 @@ class LogisticRegressionNewton(BaseLR):
             
             if self.log == True:
                 self.log_loss(X, y, self.theta)
+
+
+class LogisticRegressionBFGS(BaseLR):
+    def __init__(
+        self,
+        learning_rate=0.01,
+        num_iterations=100,
+        regularization="None",
+        lambda_=1.0,
+        fit_intercept=True,
+        log=True
+    ):
+        super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log)
+        
+    def fit(self, X, y):
+        if self.fit_intercept:
+            X = super()._BaseLR__add_intercept(X)
+            
+        self.history = []
+        
+        self.theta = np.zeros((X.shape[1], 1))
+
+        z = np.dot(X, self.theta)
+        h = super()._BaseLR__sigmoid(z)
+        gradient = self.gradient(h, y, X, self.theta)
+
+        H = np.eye(X.shape[1])
+        
+        for _ in range(self.num_iterations):
+            p = -H @ gradient
+            s = self.learning_rate * p
+            theta_new = self.theta + s
+            
+            z_new = np.dot(X, theta_new)
+            h_new = super()._BaseLR__sigmoid(z_new)
+            gradient_new = self.gradient(h_new, y, X, theta_new)
+            
+            delta_gradient = gradient_new - gradient
+            
+            r = 1/(delta_gradient.T@s)
+            
+            li = (np.eye(X.shape[1])-(r*((s@(delta_gradient.T)))))
+            ri = (np.eye(X.shape[1])-(r*((delta_gradient@(s.T)))))
+            
+            H = li @ H @ ri + (r*((s@(s.T))))
+            
+            gradient = gradient_new
+            self.theta = theta_new
+            
+            z = np.dot(X, self.theta)
+            h = super()._BaseLR__sigmoid(z)
+            (-y * np.log(h) - (1 - y) * np.log(1 - h)).mean()
+        
+            if self.log == True:
+                self.log_loss(X, y, self.theta)

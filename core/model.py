@@ -21,8 +21,8 @@ class LogisticRegression:
         log=True
     ):
         # Check solver
-        if solver not in ["gradient-descent", "newton", "sgd"]:
-            raise ValueError("Solver must be one of ['gradient-descent', 'newton', 'sgd']")
+        if solver not in ["gradient-descent", "newton", "sgd", "bfgs"]:
+            raise ValueError("Solver must be one of ['gradient-descent', 'newton', 'sgd', 'bfgs']")
         
         if solver == "gradient-descent":
             self.solver = LogisticRegressionGD(
@@ -54,6 +54,15 @@ class LogisticRegression:
                 batch_size=batch_size, 
                 fit_intercept=fit_intercept, 
                 log=log
+            )
+        elif solver == "bfgs":
+            self.solver = LogisticRegressionBFGS(
+                learning_rate=learning_rate, 
+                num_iterations=num_iterations, 
+                regularization=regularization, 
+                lambda_=lambda_, 
+                fit_intercept=fit_intercept, 
+                log=log            
             )
 
 

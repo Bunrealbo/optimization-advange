@@ -64,6 +64,18 @@ class LogisticRegression:
                 fit_intercept=fit_intercept, 
                 log=log            
             )
+        elif solver == "adam":
+            self.solver = LogisticRegressionAdam(
+                learning_rate=learning_rate, 
+                num_iterations=num_iterations, 
+                regularization=regularization, 
+                lambda_=lambda_, 
+                fit_intercept=fit_intercept, 
+                log=log,
+                beta1=beta1,
+                beta2=beta2,
+                epsilon=epsilon
+            )
 
 
     def fit(self, X, y):

@@ -253,3 +253,45 @@ class LogisticRegressionBFGS(BaseLR):
         
             if self.log == True:
                 self.log_loss(X, y, self.theta)
+
+
+class LogisticRegressionAdam(BaseLR):
+    def __init__(
+        self,
+        learning_rate=0.01,
+        num_iterations=100,
+        regularization="None",
+        lambda_=1.0,
+        fit_intercept=True,
+        log=True,
+        beta1=0.9,
+        beta2=0.999,
+        epsilon=1e-8
+    ):
+        super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log)
+        self.beta1 = beta1
+        self.beta2 = beta2        
+        self.epsilon = epsilon
+        
+    def fit(self, X, y):
+        if self.fit_intercept:
+            X = super()._BaseLR__add_intercept(X)
+        
+        self.history = []
+        
+        self.theta = np.zeros((X.shape[1], 1))
+        
+        m = np.zeros((X.shape[1], 1))
+        v = np.zeros((X.shape[1], 1))
+        
+        for t in range(1, self.num_iterations+1):
+            z = np.dot(X, self.theta)
+            h = super()._BaseLR__sigmoid(z)
+            gradient = self.gradient(h, y, X, self.theta)
+        
+            m = self.beta1 * m + (1 - self.beta1) * gradient
+            v = self.beta2 * v + (1 - self.beta2) * np.multiply(gradient, gradient)
+            m_hat = m / (1 - self.beta1**t)
+            v_hat = v / (1 - self.beta2**t)
+            
+            self.theta = self.theta - np.divide(self.learning_rate*m_hat, (np.sqrt(v_hat) + self.epsilon))

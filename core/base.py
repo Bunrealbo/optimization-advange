@@ -131,7 +131,7 @@ class LogisticRegressionGD(BaseLR):
                 self.log_loss(X, y, self.theta)
 
 
-class LogisticRegressionSGD(BaseLR):
+class LogisticRegressionBatchGD(BaseLR):
     def __init__(
         self, 
         learning_rate=0.01, 

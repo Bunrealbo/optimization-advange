@@ -1,8 +1,10 @@
 from base import (
     BaseLR,
     LogisticRegressionGD,
-    LogisticRegressionSGD,
-    LogisticRegressionNewton
+    LogisticRegressionBatchGD,
+    LogisticRegressionNewton,
+    LogisticRegressionBFGS,
+    LogisticRegressionAdam
 )
 
 class LogisticRegression:
@@ -24,7 +26,7 @@ class LogisticRegression:
         epsilon=1e-8
     ):
         # Check solver
-        if solver not in ["gradient-descent", "newton", "sgd", "bfgs", "adam"]:
+        if solver not in ["gradient-descent", "newton", "batch-gd", "bfgs", "adam"]:
             raise ValueError("Solver must be one of ['gradient-descent', 'newton', 'sgd', 'bfgs', 'adam']")
         
         if solver == "gradient-descent":
@@ -48,8 +50,8 @@ class LogisticRegression:
                 fit_intercept=fit_intercept, 
                 log=log
             )
-        elif solver == "sgd":
-            self.solver = LogisticRegressionSGD(
+        elif solver == "batch-gd":
+            self.solver = LogisticRegressionBatchGD(
                 learning_rate=learning_rate, 
                 num_iterations=num_iterations, 
                 regularization=regularization, 

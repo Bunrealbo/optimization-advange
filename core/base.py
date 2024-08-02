@@ -70,7 +70,7 @@ class BaseLR(ABC):
     def predict(self, X):
         return self.predict_prob(X).round()
     
-    def log_loss(self, X, y, theta):
+    def logging_loss(self, X, y, theta):
         z = np.dot(X, theta)
         h = self.__sigmoid(z)
         loss = self.__loss(h, y, theta)
@@ -128,7 +128,7 @@ class LogisticRegressionGD(BaseLR):
             self.theta -= learning_rate * gradient
             
             if self.log == True:
-                self.log_loss(X, y, self.theta)
+                self.logging_loss(X, y, self.theta)
 
 
 class LogisticRegressionBatchGD(BaseLR):
@@ -206,7 +206,7 @@ class LogisticRegressionNewton(BaseLR):
             self.theta -= self.learning_rate * np.linalg.pinv(hessian) @ gradient
             
             if self.log == True:
-                self.log_loss(X, y, self.theta)
+                self.logging_loss(X, y, self.theta)
 
 
 class LogisticRegressionBFGS(BaseLR):
@@ -261,7 +261,7 @@ class LogisticRegressionBFGS(BaseLR):
             (-y * np.log(h) - (1 - y) * np.log(1 - h)).mean()
         
             if self.log == True:
-                self.log_loss(X, y, self.theta)
+                self.logging_loss(X, y, self.theta)
 
 
 class LogisticRegressionAdam(BaseLR):

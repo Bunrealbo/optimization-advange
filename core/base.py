@@ -231,11 +231,8 @@ class LogisticRegressionBFGS(BaseLR):
     def fit(self, X, y):
         if self.fit_intercept:
             X = super()._BaseLR__add_intercept(X)
-            
-        self.history = []
         
         self.theta = np.zeros((X.shape[1], 1))
-
         z = np.dot(X, self.theta)
         h = super()._BaseLR__sigmoid(z)
         gradient = self.gradient(h, y, X, self.theta)
@@ -295,10 +292,7 @@ class LogisticRegressionAdam(BaseLR):
         if self.fit_intercept:
             X = super()._BaseLR__add_intercept(X)
         
-        self.history = []
-        
         self.theta = np.zeros((X.shape[1], 1))
-        
         m = np.zeros((X.shape[1], 1))
         v = np.zeros((X.shape[1], 1))
         

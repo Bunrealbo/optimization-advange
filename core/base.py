@@ -3,7 +3,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 from scipy import sparse as sp
 from loader import DataLoader
-import time
+from time import time
 
 class BaseLR(ABC):
     def __init__(
@@ -117,7 +117,7 @@ class LogisticRegressionGD(BaseLR):
         
         self.theta = np.zeros((X.shape[1], 1))
         
-        start = time.time()
+        start = time()
         for _ in range(self.num_iterations):
             z = np.dot(X, self.theta)
             h = super()._BaseLR__sigmoid(z)
@@ -132,7 +132,7 @@ class LogisticRegressionGD(BaseLR):
             
             if self.log == True:
                 self.logging_loss(X, y, self.theta)
-                self.times.append(time.time() - start)
+                self.times.append(time() - start)
 
 
 class LogisticRegressionBatchGD(BaseLR):
@@ -159,7 +159,7 @@ class LogisticRegressionBatchGD(BaseLR):
         self.step_history = []
         self.theta = np.zeros((X.shape[1], 1))
         
-        start = time.time()
+        start = time()
         for _ in range(self.num_iterations):
             best_loss = np.inf
             for batch_X, batch_y in data_loader:
@@ -178,7 +178,7 @@ class LogisticRegressionBatchGD(BaseLR):
             
             if self.log == True:
                 self.history.append(best_loss)
-                self.times.append(time.time() - start)
+                self.times.append(time() - start)
     
 
 class LogisticRegressionNewton(BaseLR):
@@ -217,7 +217,7 @@ class LogisticRegressionNewton(BaseLR):
         # weights initialization
         self.theta = np.zeros((X.shape[1], 1))
         
-        start = time.time()
+        start = time()
         for i in range(self.num_iterations):
             z = np.dot(X, self.theta)
             h = super()._BaseLR__sigmoid(z)
@@ -234,7 +234,7 @@ class LogisticRegressionNewton(BaseLR):
             
             if self.log == True:
                 self.logging_loss(X, y, self.theta)
-                self.times.append(time.time() - start)
+                self.times.append(time() - start)
 
 
 class LogisticRegressionBFGS(BaseLR):
@@ -260,7 +260,7 @@ class LogisticRegressionBFGS(BaseLR):
 
         H = np.eye(X.shape[1])
         
-        start = time.time()
+        start = time()
         for _ in range(self.num_iterations):
             p = -H @ gradient
             s = self.learning_rate * p

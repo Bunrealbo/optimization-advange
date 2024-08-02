@@ -1,7 +1,7 @@
 import numpy as np
 
 class DataLoader:
-    def __init__(self, X, y, batch_size=32, shuffle=True, random_seed=42):
+    def __init__(self, X, y, batch_size=32, shuffle=True):
         """
         Initializes a DataLoader object with the given data.
 
@@ -10,10 +10,8 @@ class DataLoader:
             y (ndarray): The target data.
             batch_size (int, optional): The batch size for training. Defaults to 32.
             shuffle (bool, optional): Whether to shuffle the data. Defaults to True.
-            random_seed (int, optional): The random seed for shuffling the data. Defaults to 42.
         """
         if shuffle:
-            np.random.seed(random_seed)
             indices = np.random.permutation(len(y))
             self.X, self.y = X[indices], y[indices]
         else:

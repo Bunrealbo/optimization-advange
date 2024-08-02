@@ -44,10 +44,10 @@ class BaseLR(ABC):
         return (-y * np.log(h) - (1 - y) * np.log(1 - h)).mean()
     
     def __loss_l1(self, h, y, theta):
-        return self.__loss(h, y) + self.lambda_ * np.sum(np.abs(theta[1:])) / y.size
+        return self.__loss(h, y) + self.lambda_ * np.sum(np.abs(theta[1:]))
     
     def __loss_l2(self, h, y, theta):
-        return self.__loss(h, y) + self.lambda_ * np.sum(np.square(theta[1:])) / (2 * y.size)
+        return self.__loss(h, y) + self.lambda_ * np.sum(np.square(theta[1:])) / 2
     
     def __gradient(self, h, y, X, theta=None):
         return np.dot(X.T, (h - y)) / y.size

@@ -161,7 +161,6 @@ class LogisticRegressionBatchGD(BaseLR):
         
         start = time()
         for _ in range(self.num_iterations):
-            best_loss = np.inf
             for batch_X, batch_y in data_loader:
                 z = np.dot(batch_X, self.theta)
                 h = super()._BaseLR__sigmoid(z)
@@ -173,11 +172,9 @@ class LogisticRegressionBatchGD(BaseLR):
                 h = super()._BaseLR__sigmoid(z)
                 loss = super()._BaseLR__loss(h, batch_y, self.theta)
                 self.step_history.append(loss)
-                if loss < best_loss:
-                    best_loss = loss
             
             if self.log == True:
-                self.history.append(best_loss)
+                self.logging_loss(X, y, self.theta)
                 self.times.append(time() - start)
     
 

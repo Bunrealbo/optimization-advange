@@ -2,7 +2,7 @@ import numpy as np
 
 from abc import ABC, abstractmethod
 from loader import DataLoader
-from numba import njit
+import time
 
 class BaseLR(ABC):
     def __init__(
@@ -21,6 +21,7 @@ class BaseLR(ABC):
         self.fit_intercept = fit_intercept
         self.log = log
         self.history = []
+        self.times = []
 
         # Choose the loss function and gradient function
         if self.regularization == "l1":
@@ -115,6 +116,7 @@ class LogisticRegressionGD(BaseLR):
         
         self.theta = np.zeros((X.shape[1], 1))
         
+        start = time.time()
         for _ in range(self.num_iterations):
             z = np.dot(X, self.theta)
             h = super()._BaseLR__sigmoid(z)
@@ -129,6 +131,7 @@ class LogisticRegressionGD(BaseLR):
             
             if self.log == True:
                 self.logging_loss(X, y, self.theta)
+                self.times.append(time.time() - start)
 
 
 class LogisticRegressionBatchGD(BaseLR):
@@ -155,6 +158,7 @@ class LogisticRegressionBatchGD(BaseLR):
         self.step_history = []
         self.theta = np.zeros((X.shape[1], 1))
         
+        start = time.time()
         for _ in range(self.num_iterations):
             best_loss = np.inf
             for batch_X, batch_y in data_loader:
@@ -173,6 +177,7 @@ class LogisticRegressionBatchGD(BaseLR):
             
             if self.log == True:
                 self.history.append(best_loss)
+                self.times.append(time.time() - start)
     
 
 class LogisticRegressionNewton(BaseLR):
@@ -196,6 +201,7 @@ class LogisticRegressionNewton(BaseLR):
         # weights initialization
         self.theta = np.zeros((X.shape[1], 1))
         
+        start = time.time()
         for i in range(self.num_iterations):
             z = np.dot(X, self.theta)
             h = super()._BaseLR__sigmoid(z)
@@ -207,6 +213,7 @@ class LogisticRegressionNewton(BaseLR):
             
             if self.log == True:
                 self.logging_loss(X, y, self.theta)
+                self.times.append(time.time() - start)
 
 
 class LogisticRegressionBFGS(BaseLR):
@@ -235,6 +242,7 @@ class LogisticRegressionBFGS(BaseLR):
 
         H = np.eye(X.shape[1])
         
+        start = time.time()
         for _ in range(self.num_iterations):
             p = -H @ gradient
             s = self.learning_rate * p
@@ -262,6 +270,7 @@ class LogisticRegressionBFGS(BaseLR):
         
             if self.log == True:
                 self.logging_loss(X, y, self.theta)
+                self.times.append(time.time() - start)
 
 
 class LogisticRegressionAdam(BaseLR):
@@ -293,6 +302,7 @@ class LogisticRegressionAdam(BaseLR):
         m = np.zeros((X.shape[1], 1))
         v = np.zeros((X.shape[1], 1))
         
+        start = time.time()
         for t in range(1, self.num_iterations+1):
             z = np.dot(X, self.theta)
             h = super()._BaseLR__sigmoid(z)
@@ -304,3 +314,7 @@ class LogisticRegressionAdam(BaseLR):
             v_hat = v / (1 - self.beta2**t)
             
             self.theta = self.theta - np.divide(self.learning_rate*m_hat, (np.sqrt(v_hat) + self.epsilon))
+
+            if self.log == True:
+                self.logging_loss(X, y, self.theta)
+                self.times.append(time.time() - start)

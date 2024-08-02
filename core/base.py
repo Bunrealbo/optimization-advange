@@ -152,18 +152,27 @@ class LogisticRegressionBatchGD(BaseLR):
         # Create data loader
         data_loader = DataLoader(X, y, batch_size=self.batch_size)
         
+        self.step_history = []
         self.theta = np.zeros((X.shape[1], 1))
         
         for _ in range(self.num_iterations):
+            best_loss = np.inf
             for batch_X, batch_y in data_loader:
                 z = np.dot(batch_X, self.theta)
                 h = super()._BaseLR__sigmoid(z)
 
                 gradient = self.gradient(h, batch_y, batch_X, self.theta)
                 self.theta -= self.learning_rate * gradient
+
+                z = np.dot(batch_X, self.theta)
+                h = super()._BaseLR__sigmoid(z)
+                loss = super()._BaseLR__loss(h, batch_y, self.theta)
+                self.step_history.append(loss)
+                if loss < best_loss:
+                    best_loss = loss
             
             if self.log == True:
-                self.log_loss(X, y, self.theta)
+                self.history.append(best_loss)
     
 
 class LogisticRegressionNewton(BaseLR):

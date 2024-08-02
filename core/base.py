@@ -189,9 +189,24 @@ class LogisticRegressionNewton(BaseLR):
         regularization="None",
         lambda_=1.0,
         fit_intercept=True, 
-        log=True
+        log=True,
+        rho=0.5,
+        c=0.5,
+        backtracking=False
     ):
         super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log)
+        self.rho = rho
+        self.c = c
+        self.backtracking = backtracking
+
+    def __find_optimal_learning_rate(self, learning_rate, rho, c, gradient, hessian, X, y):
+        alpha = learning_rate
+        p_k = - np.linalg.pinv(hessian) @ gradient # descent direction
+        while super()._BaseLR__loss(super()._BaseLR__sigmoid(np.dot(X, self.theta + alpha * p_k)), y) > \
+              super()._BaseLR__loss(super()._BaseLR__sigmoid(np.dot(X, self.theta)), y) - c * alpha * gradient.T @ p_k:
+            alpha *= rho
+
+        return alpha
 
     def fit(self, X, y):
         if self.fit_intercept:
@@ -210,7 +225,12 @@ class LogisticRegressionNewton(BaseLR):
             gradient = self.gradient(h, y, X, self.theta)
             v = (h * (1 - h)).reshape(-1, )
             hessian = np.dot(X.T, np.dot(sp.diags(v), X)) / y.size
-            self.theta -= self.learning_rate * np.linalg.pinv(hessian) @ gradient
+
+            if self.backtracking:
+                learning_rate = self.__find_optimal_learning_rate(self.learning_rate, self.rho, self.c, gradient, hessian, X, y)
+            else:
+                learning_rate = self.learning_rate
+            self.theta -= learning_rate * np.linalg.pinv(hessian) @ gradient
             
             if self.log == True:
                 self.logging_loss(X, y, self.theta)

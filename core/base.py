@@ -1,6 +1,7 @@
 import numpy as np
 
 from abc import ABC, abstractmethod
+from scipy import sparse as sp
 from loader import DataLoader
 import time
 
@@ -208,7 +209,7 @@ class LogisticRegressionNewton(BaseLR):
 
             gradient = self.gradient(h, y, X, self.theta)
             v = (h * (1 - h)).reshape(-1, )
-            hessian = np.dot(X.T, np.dot(np.diag(v), X)) / y.size
+            hessian = np.dot(X.T, np.dot(sp.diags(v), X)) / y.size
             self.theta -= self.learning_rate * np.linalg.pinv(hessian) @ gradient
             
             if self.log == True:

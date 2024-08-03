@@ -34,6 +34,15 @@ class DataLoader:
         """
         self.current_batch = 0
         return self
+    
+    def __len__(self):
+        """
+        Returns the number of batches in the DataLoader.
+
+        Returns:
+            int: The number of batches in the DataLoader.
+        """
+        return self.n_batches
 
     def __next__(self):
         """

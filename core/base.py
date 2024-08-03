@@ -162,6 +162,8 @@ class LogisticRegressionPA(BaseLR):
         if self.regularization != "l1":
             raise ValueError("Proximal Gradient Descent only supports L1 regularization.")
         
+        self.gradient = super()._BaseLR__gradient # Use the default gradient function for g(x)
+        
     def soft_threshold(self, theta, lambda_):
         return np.sign(theta) * np.maximum(np.abs(theta) - lambda_, 0)
 

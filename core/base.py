@@ -116,7 +116,7 @@ class LogisticRegressionGD(BaseLR):
     def __find_optimal_learning_rate(self, learning_rate, rho, c, gradient, X, y):
         alpha = learning_rate
         while super()._BaseLR__loss(super()._BaseLR__sigmoid(np.dot(X, self.theta - alpha * gradient)), y) > \
-              super()._BaseLR__loss(super()._BaseLR__sigmoid(np.dot(X, self.theta)), y) - c * alpha * (np.linalg.norm(gradient)**2):
+              super()._BaseLR__loss(super()._BaseLR__sigmoid(np.dot(X, self.theta)), y) + c * alpha * (np.linalg.norm(gradient)**2):
             alpha *= rho
 
         return alpha

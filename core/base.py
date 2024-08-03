@@ -267,7 +267,7 @@ class LogisticRegressionNewton(BaseLR):
 
             gradient = self.gradient(h, y, X, self.theta)
             v = (h * (1 - h)).reshape(-1, )
-            hessian = np.dot(X.T, np.dot(sp.diags(v), X)) / y.size
+            hessian = X.T @ sp.diags(v) @ X / y.size
 
             if self.backtracking:
                 learning_rate = self.__find_optimal_learning_rate(self.learning_rate, self.rho, self.c, gradient, hessian, X, y)

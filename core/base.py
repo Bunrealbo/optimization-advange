@@ -135,6 +135,50 @@ class LogisticRegressionGD(BaseLR):
                 self.times.append(time() - start)
 
 
+# Proximal Gradient Descent with Acceleration (often referred to as Fast Iterative Shrinkage-Thresholding Algorithm or FISTA)
+class LogisticRegressionPA(BaseLR): 
+    def __init__(
+        self,
+        learning_rate=0.01,
+        num_iterations=100,
+        regularization="l1",
+        lambda_=1.0,
+        fit_intercept=True,
+        log=True,
+    ):
+        super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log)
+
+        # Check only supports L1 regularization
+        if self.regularization != "l1":
+            raise ValueError("Proximal Gradient Descent only supports L1 regularization.")
+        
+    def soft_threshold(self, theta, lambda_):
+        return np.sign(theta) * np.maximum(np.abs(theta) - lambda_, 0)
+
+    def fit(self, X, y):
+        if self.fit_intercept:
+            X = super()._BaseLR__add_intercept(X)
+        
+        self.theta = np.zeros((X.shape[1], 1))
+        theta_previous = self.theta.copy()
+
+        start = time()
+        for i in range(1, self.num_iterations + 1):
+            v = self.theta + ((i - 2) / (i + 1)) * (self.theta - theta_previous)
+
+            z = np.dot(X, self.theta)
+            h = super()._BaseLR__sigmoid(z)
+            gradient = self.gradient(h, y, X, self.theta)
+
+            # Update theta
+            theta_previous = self.theta.copy()
+            self.theta = self.soft_threshold(v - self.learning_rate * gradient, self.lambda_ * self.learning_rate)
+
+            if self.log == True:
+                self.logging_loss(X, y, self.theta)
+                self.times.append(time() - start)
+
+
 class LogisticRegressionBatchGD(BaseLR):
     def __init__(
         self, 

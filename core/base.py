@@ -173,24 +173,19 @@ class LogisticRegressionPA(BaseLR):
 
         start = time()
         for i in range(1, self.num_iterations + 1):
+            z = np.dot(X, self.theta)
+            h = super()._BaseLR__sigmoid(z)
+            v = self.theta + ((i - 2) / (i + 1)) * (self.theta - theta_previous)
+            gradient = self.gradient(h, y, X, self.theta)
+            theta_previous = self.theta.copy()
+
             if self.regularization == "l1": # Proximal operator for L1 regularization
-                v = self.theta + ((i - 2) / (i + 1)) * (self.theta - theta_previous)
-
-                z = np.dot(X, self.theta)
-                h = super()._BaseLR__sigmoid(z)
-                gradient = self.gradient(h, y, X, self.theta)
-
                 # Update theta
-                theta_previous = self.theta.copy()
                 self.theta = self.soft_threshold(v - self.learning_rate * gradient, self.lambda_ * self.learning_rate)
-                
-            else: # Otherwise, use the default gradient descent
-                z = np.dot(X, self.theta)
-                h = super()._BaseLR__sigmoid(z)
-                gradient = self.gradient(h, y, X, self.theta)
 
+            else: # Otherwise, use the default gradient descent
                 # Update theta
-                self.theta = self.theta - self.learning_rate * gradient
+                self.theta = v - self.learning_rate * gradient
 
             if self.log == True:
                 self.logging_loss(X, y, self.theta)

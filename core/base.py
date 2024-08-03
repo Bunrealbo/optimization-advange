@@ -28,12 +28,15 @@ class BaseLR(ABC):
         if self.regularization == "l1":
             self.loss = self.__loss_l1
             self.gradient = self.__gradient_l1
+            self.hessian = self.__hessian
         elif self.regularization == "l2":
             self.loss = self.__loss_l2
             self.gradient = self.__gradient_l2
+            self.hessian = self.__hessian_l2
         else:
             self.loss = self.__loss
             self.gradient = self.__gradient
+            self.hessian = self.__hessian
 
     def __add_intercept(self, X):
         intercept = np.ones((X.shape[0], 1))
@@ -63,6 +66,13 @@ class BaseLR(ABC):
         grad = self.__gradient(h, y, X)
         grad[1:] += self.lambda_ * theta[1:]
         return grad
+    
+    def __hessian(self, h, X):
+        v = (h * (1 - h)).reshape(-1, )
+        return X.T @ sp.diags(v) @ X / h.size
+    
+    def __hessian_l2(self, h, X):
+        return self.__hessian(h, X) + self.lambda_ * np.eye(X.shape[1])
     
     def predict_prob(self, X):
         if self.fit_intercept:
@@ -268,7 +278,7 @@ class LogisticRegressionNewton(BaseLR):
 
             gradient = self.gradient(h, y, X, self.theta)
             v = (h * (1 - h)).reshape(-1, )
-            hessian = X.T @ sp.diags(v) @ X / y.size
+            hessian = self.hessian(h, X)
 
             if self.backtracking:
                 learning_rate = self.__find_optimal_learning_rate(self.learning_rate, self.rho, self.c, gradient, hessian, X, y)

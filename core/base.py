@@ -158,11 +158,8 @@ class LogisticRegressionPA(BaseLR):
     ):
         super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log)
 
-        # Check only supports L1 regularization
-        if self.regularization != "l1":
-            raise ValueError("Proximal Gradient Descent only supports L1 regularization.")
-        
-        self.gradient = super()._BaseLR__gradient # Use the default gradient function for g(x)
+        if self.regularization == "l1":
+            self.gradient = super()._BaseLR__gradient # Use the default gradient function for g(x)
         
     def soft_threshold(self, theta, lambda_):
         return np.sign(theta) * np.maximum(np.abs(theta) - lambda_, 0)
@@ -176,15 +173,24 @@ class LogisticRegressionPA(BaseLR):
 
         start = time()
         for i in range(1, self.num_iterations + 1):
-            v = self.theta + ((i - 2) / (i + 1)) * (self.theta - theta_previous)
+            if self.regularization == "l1": # Proximal operator for L1 regularization
+                v = self.theta + ((i - 2) / (i + 1)) * (self.theta - theta_previous)
 
-            z = np.dot(X, self.theta)
-            h = super()._BaseLR__sigmoid(z)
-            gradient = self.gradient(h, y, X, self.theta)
+                z = np.dot(X, self.theta)
+                h = super()._BaseLR__sigmoid(z)
+                gradient = self.gradient(h, y, X, self.theta)
 
-            # Update theta
-            theta_previous = self.theta.copy()
-            self.theta = self.soft_threshold(v - self.learning_rate * gradient, self.lambda_ * self.learning_rate)
+                # Update theta
+                theta_previous = self.theta.copy()
+                self.theta = self.soft_threshold(v - self.learning_rate * gradient, self.lambda_ * self.learning_rate)
+                
+            else: # Otherwise, use the default gradient descent
+                z = np.dot(X, self.theta)
+                h = super()._BaseLR__sigmoid(z)
+                gradient = self.gradient(h, y, X, self.theta)
+
+                # Update theta
+                self.theta = self.theta - self.learning_rate * gradient
 
             if self.log == True:
                 self.logging_loss(X, y, self.theta)
@@ -344,7 +350,7 @@ class LogisticRegressionBFGS(BaseLR):
         
             if self.log == True:
                 self.logging_loss(X, y, self.theta)
-                self.times.append(time.time() - start)
+                self.times.append(time() - start)
 
 
 class LogisticRegressionAdam(BaseLR):
@@ -373,7 +379,7 @@ class LogisticRegressionAdam(BaseLR):
         m = np.zeros((X.shape[1], 1))
         v = np.zeros((X.shape[1], 1))
         
-        start = time.time()
+        start = time()
         for t in range(1, self.num_iterations+1):
             z = np.dot(X, self.theta)
             h = super()._BaseLR__sigmoid(z)
@@ -388,4 +394,4 @@ class LogisticRegressionAdam(BaseLR):
 
             if self.log == True:
                 self.logging_loss(X, y, self.theta)
-                self.times.append(time.time() - start)
+                self.times.append(time() - start)

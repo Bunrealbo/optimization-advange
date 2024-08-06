@@ -210,13 +210,10 @@ class LogisticRegressionBatchGD(BaseLR):
         if self.fit_intercept:
             X = super()._BaseLR__add_intercept(X)
         
-        self.step_history = []
         self.theta = np.zeros((X.shape[1], 1))
         
         start = time()
         for _ in range(self.num_iterations):
-            total_loss = 0
-
             # Create data loader
             data_loader = DataLoader(X, y, batch_size=self.batch_size)
             
@@ -232,8 +229,6 @@ class LogisticRegressionBatchGD(BaseLR):
                 z = np.dot(batch_X, self.theta)
                 h = super()._BaseLR__sigmoid(z)
                 loss = super()._BaseLR__loss(h, batch_y, self.theta)
-                total_loss += loss
-                self.step_history.append(loss)
                 
                 if loss < best_loss:
                     best_loss = loss

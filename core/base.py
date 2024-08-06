@@ -13,7 +13,8 @@ class BaseLR(ABC):
         regularization="l2",
         lambda_=1.0,
         fit_intercept=True, 
-        log=False
+        log=False, 
+        tol=1e-3
     ):
         self.learning_rate = learning_rate
         self.num_iterations = num_iterations
@@ -21,6 +22,7 @@ class BaseLR(ABC):
         self.lambda_ = lambda_
         self.fit_intercept = fit_intercept
         self.log = log
+        self.tol = tol
         self.history = []
         self.times = []
 
@@ -103,12 +105,13 @@ class LogisticRegressionGD(BaseLR):
         regularization="l2",
         lambda_=1.0,
         fit_intercept=True, 
-        log=True, 
+        log=True,
+        tol=1e-3,
         rho = 0.5,
         c = 0.5,
         backtracking = False
     ):
-        super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log)
+        super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log, tol)
         self.rho = rho
         self.c = c
         self.backtracking = backtracking
@@ -144,6 +147,10 @@ class LogisticRegressionGD(BaseLR):
                 self.logging_loss(X, y, self.theta)
                 self.times.append(time() - start)
 
+            # Check to stop early
+            if np.linalg.norm(gradient) < self.tol:
+                break
+
 
 # Proximal Gradient Descent with Acceleration (often referred to as Fast Iterative Shrinkage-Thresholding Algorithm or FISTA)
 class LogisticRegressionPA(BaseLR): 
@@ -155,8 +162,9 @@ class LogisticRegressionPA(BaseLR):
         lambda_=1.0,
         fit_intercept=True,
         log=True,
+        tol=1e-3,
     ):
-        super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log)
+        super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log, tol)
 
         if self.regularization == "l1":
             self.gradient = super()._BaseLR__gradient # Use the default gradient function for g(x)
@@ -191,6 +199,10 @@ class LogisticRegressionPA(BaseLR):
                 self.logging_loss(X, y, self.theta)
                 self.times.append(time() - start)
 
+            # Check to stop early
+            if np.linalg.norm(gradient) < self.tol:
+                break
+
 
 class LogisticRegressionBatchGD(BaseLR):
     def __init__(
@@ -201,9 +213,10 @@ class LogisticRegressionBatchGD(BaseLR):
         lambda_=1.0,
         batch_size=32,
         fit_intercept=True, 
-        log=True
+        log=True,
+        tol=1e-3
     ):
-        super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log)
+        super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log, tol)
         self.batch_size = batch_size
 
     def fit(self, X, y):
@@ -237,6 +250,10 @@ class LogisticRegressionBatchGD(BaseLR):
             if self.log == True:
                 self.logging_loss(X, y, best_theta)
                 self.times.append(time() - start)
+
+            # Check to stop early
+            if np.linalg.norm(gradient) < self.tol:
+                break
     
 
 class LogisticRegressionNewton(BaseLR):
@@ -248,11 +265,12 @@ class LogisticRegressionNewton(BaseLR):
         lambda_=1.0,
         fit_intercept=True, 
         log=True,
+        tol=1e-3,
         rho=0.5,
         c=0.5,
         backtracking=False
     ):
-        super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log)
+        super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log, tol)
         self.rho = rho
         self.c = c
         self.backtracking = backtracking
@@ -295,6 +313,10 @@ class LogisticRegressionNewton(BaseLR):
                 self.logging_loss(X, y, self.theta)
                 self.times.append(time() - start)
 
+            # Check to stop early
+            if np.linalg.norm(gradient) < self.tol:
+                break
+
 
 class LogisticRegressionBFGS(BaseLR):
     def __init__(
@@ -304,9 +326,10 @@ class LogisticRegressionBFGS(BaseLR):
         regularization="None",
         lambda_=1.0,
         fit_intercept=True,
-        log=True
+        log=True,
+        tol=1e-3
     ):
-        super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log)
+        super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log, tol)
         
     def fit(self, X, y):
         if self.fit_intercept:
@@ -349,6 +372,10 @@ class LogisticRegressionBFGS(BaseLR):
                 self.logging_loss(X, y, self.theta)
                 self.times.append(time() - start)
 
+            # Check to stop early
+            if np.linalg.norm(gradient) < self.tol:
+                break
+
 
 class LogisticRegressionAdam(BaseLR):
     def __init__(
@@ -359,11 +386,12 @@ class LogisticRegressionAdam(BaseLR):
         lambda_=1.0,
         fit_intercept=True,
         log=True,
+        tol=1e-3,
         beta1=0.9,
         beta2=0.999,
         epsilon=1e-8
     ):
-        super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log)
+        super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log, tol)
         self.beta1 = beta1
         self.beta2 = beta2        
         self.epsilon = epsilon
@@ -392,3 +420,7 @@ class LogisticRegressionAdam(BaseLR):
             if self.log == True:
                 self.logging_loss(X, y, self.theta)
                 self.times.append(time() - start)
+
+            # Check to stop early
+            if np.linalg.norm(gradient) < self.tol:
+                break

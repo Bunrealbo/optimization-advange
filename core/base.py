@@ -332,8 +332,8 @@ class LogisticRegressionNewton(BaseLR):
                 learning_rate = self.__find_optimal_learning_rate(self.learning_rate, self.rho, self.c, gradient, hessian, X, y)
             else:
                 learning_rate = self.learning_rate
-            y = np.linalg.solve(hessian, - learning_rate * gradient)
-            self.theta = y + self.theta
+            y_ = np.linalg.solve(hessian, - learning_rate * gradient)
+            self.theta = y_ + self.theta
             
             if self.log == True:
                 self.logging_loss(X, y, self.theta)

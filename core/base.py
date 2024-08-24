@@ -51,22 +51,22 @@ class BaseLR(ABC):
         return (-y * np.log(h) - (1 - y) * np.log(1 - h)).mean()
     
     def __loss_l1(self, h, y, theta):
-        return self.__loss(h, y) + self.lambda_ * np.sum(np.abs(theta[1:]))
+        return self.__loss(h, y) + self.lambda_ * np.sum(np.abs(theta[1:])) / y.size
     
     def __loss_l2(self, h, y, theta):
-        return self.__loss(h, y) + self.lambda_ * np.sum(np.square(theta[1:])) / 2
+        return self.__loss(h, y) + self.lambda_ * np.sum(np.square(theta[1:])) / (2 * y.size)
     
     def __gradient(self, h, y, X, theta=None):
         return np.dot(X.T, (h - y)) / y.size
     
     def __gradient_l1(self, h, y, X, theta):
         grad = self.__gradient(h, y, X)
-        grad[1:] += self.lambda_ * np.sign(theta[1:])
+        grad[1:] += self.lambda_ * np.sign(theta[1:]) / y.size
         return grad
     
     def __gradient_l2(self, h, y, X, theta):
         grad = self.__gradient(h, y, X)
-        grad[1:] += self.lambda_ * theta[1:]
+        grad[1:] += self.lambda_ * theta[1:] / y.size
         return grad
     
     def __hessian(self, h, X):
@@ -74,7 +74,7 @@ class BaseLR(ABC):
         return X.T @ sp.diags(v) @ X / h.size
     
     def __hessian_l2(self, h, X):
-        return self.__hessian(h, X) + self.lambda_ * np.eye(X.shape[1])
+        return self.__hessian(h, X) + self.lambda_ * np.eye(X.shape[1]) / (2 * h.size)
     
     def predict_prob(self, X):
         if self.fit_intercept:

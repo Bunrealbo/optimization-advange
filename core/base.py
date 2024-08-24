@@ -219,11 +219,37 @@ class LogisticRegressionBatchGD(BaseLR):
         super().__init__(learning_rate, num_iterations, regularization, lambda_, fit_intercept, log, tol)
         self.batch_size = batch_size
 
+        if self.regularization == "l1":
+            self.loss = self.__loss_l1
+            self.gradient = self.__gradient_l1
+        elif self.regularization == "l2":
+            self.loss = self.__loss_l2
+            self.gradient = self.__gradient_l2
+        
+    def __loss_l1(self, h, y, theta):
+        return super()._BaseLR__loss(h, y, theta) + self.lambda_ * np.sum(np.abs(theta[1:])) / self.m
+    
+    def __loss_l2(self, h, y, theta):
+        return super()._BaseLR__loss(h, y, theta) + self.lambda_ * np.sum(np.square(theta[1:])) / (2 * self.m)
+    
+    def __gradient_l1(self, h, y, X, theta):
+        grad = super()._BaseLR__gradient(h, y, X)
+        grad[1:] += self.lambda_ * np.sign(theta[1:]) / self.m
+        return grad
+    
+    def __gradient_l2(self, h, y, X, theta):
+        grad = super()._BaseLR__gradient(h, y, X)
+        grad[1:] += self.lambda_ * theta[1:] / self.m
+        return grad
+
     def fit(self, X, y):
         if self.fit_intercept:
             X = super()._BaseLR__add_intercept(X)
         
         self.theta = np.zeros((X.shape[1], 1))
+
+        # Save the number of observations
+        self.m = X.shape[0]
         
         start = time()
         for _ in range(self.num_iterations):

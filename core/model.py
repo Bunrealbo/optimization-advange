@@ -27,8 +27,9 @@ class LogisticRegression:
         epsilon=1e-8
     ):
         # Check solver
-        if solver not in ["gradient-descent", "newton", "batch-gd", "bfgs", "adam", "accelerated-gd"]:
-            raise ValueError("Solver must be one of ['gradient-descent', 'newton', 'batch-gd', 'bfgs', 'adam']")
+        __SUPPORTED_SOLVERS = ["gradient-descent", "newton", "batch-gd", "bfgs", "adam", "accelerated-gd"] 
+        if solver not in __SUPPORTED_SOLVERS:
+            raise ValueError(f"Solver must be one of {__SUPPORTED_SOLVERS}")
         
         if solver == "gradient-descent":
             self.solver = LogisticRegressionGD(

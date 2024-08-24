@@ -152,8 +152,8 @@ class LogisticRegressionGD(BaseLR):
                 break
 
 
-# Proximal Gradient Descent with Acceleration (often referred to as Fast Iterative Shrinkage-Thresholding Algorithm or FISTA)
-class LogisticRegressionPA(BaseLR): 
+# Gradient Descent with Acceleration
+class LogisticRegressionAcceleration(BaseLR): 
     def __init__(
         self,
         learning_rate=0.01,
@@ -181,15 +181,15 @@ class LogisticRegressionPA(BaseLR):
 
         start = time()
         for i in range(1, self.num_iterations + 1):
-            z = np.dot(X, self.theta)
-            h = super()._BaseLR__sigmoid(z)
             v = self.theta + ((i - 2) / (i + 1)) * (self.theta - theta_previous)
-            gradient = self.gradient(h, y, X, self.theta)
+            z = np.dot(X, v)
+            h = super()._BaseLR__sigmoid(z)
+            gradient = self.gradient(h, y, X, v)
             theta_previous = self.theta.copy()
 
-            if self.regularization == "l1": # Proximal operator for L1 regularization
+            if self.regularization == "l1": # Proximal operator for L1 regularization                
                 # Update theta
-                self.theta = self.soft_threshold(v - self.learning_rate * gradient, self.lambda_ * self.learning_rate)
+                self.theta = self.soft_threshold(v - self.learning_rate * gradient, self.lambda_ / y.size * self.learning_rate)
 
             else: # Otherwise, use the default gradient descent
                 # Update theta

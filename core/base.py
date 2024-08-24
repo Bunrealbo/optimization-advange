@@ -129,6 +129,7 @@ class LogisticRegressionGD(BaseLR):
             X = super()._BaseLR__add_intercept(X)
         
         self.theta = np.zeros((X.shape[1], 1))
+        self.gradients = []
         
         start = time()
         for _ in range(self.num_iterations):
@@ -147,6 +148,7 @@ class LogisticRegressionGD(BaseLR):
                 self.logging_loss(X, y, self.theta)
                 self.times.append(time() - start)
 
+            self.gradients.append(np.linalg.norm(gradient))
             # Check to stop early
             if np.linalg.norm(gradient) < self.tol:
                 break

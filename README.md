@@ -64,7 +64,7 @@ y = np.array([0, 1, 0, 1, 0]).reshape(-1, 1)
 # Fit the model to the data
 log_reg.fit(X, y)
 ```
-## 3. Test Modules
+## 4. Test Modules
 To test modules, you need to install `pytest`
 ```
 pip install pytest

@@ -13,7 +13,7 @@ This repository contains experiments with various optimization algorithms, evalu
 | Adam                          | ✓       | ✓      | ✓      |                 |
 
 **Comparison of BFGS (Ours) with Scikit-learn shows that our algorithm reduces runtime by approximately 50% compared to Scikit-learn, while maintaining a high accuracy score.**
-![Comparison of BFGS (Our) with Scikit-learn](./assets/compare_loss_no_regularization.png)
+![Comparison of BFGS (Our) with Scikit-learn](./assets/comparison.png)
 
 ## 1. Dataset & Transformation
 
@@ -65,7 +65,7 @@ y = np.array([0, 1, 0, 1, 0]).reshape(-1, 1)
 log_reg.fit(X, y)
 ```
 ## 3. Test Modules
-To test modules, you need install `pytest`
+To test modules, you need to install `pytest`
 ```
 pip install pytest
 pytest test/

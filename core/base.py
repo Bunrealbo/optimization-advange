@@ -2,7 +2,7 @@ import numpy as np
 
 from abc import ABC, abstractmethod
 from scipy import sparse as sp
-from .loader import DataLoader
+from loader import DataLoader
 from time import time
 
 class BaseLR(ABC):
